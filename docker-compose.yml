@@ -1,0 +1,58 @@
+version: "2"
+services:
+
+  eureka-server:
+    build: ./spring-eureka-server
+    network_mode: host
+    restart: always
+
+  api-server:
+    build: ./Zuul-Micro-Service
+    network_mode: host
+    restart: always
+
+  track-service:
+    build: ./TrackService
+    network_mode: host
+    depends_on:
+      - config-server
+    restart: always
+
+  user-service:
+    build: ./UserService
+    network_mode: host
+    depends_on:
+      - config-server
+    restart: always
+
+  config-server:
+    build: ./spring-config-server
+    network_mode: host
+    restart: always
+
+  mysql:
+    image: mysql:5.7
+#    ports:
+#      - 3306:3306
+#    expose:
+#      - 3306
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: userdb
+      MYSQL_PASSWORD: root123
+      MYSQL_USER: root
+    network_mode: host
+    hostname: localhost
+    restart: always
+    volumes:
+      - /$HOME/mysql:/var/lib/mysql
+
+  mongo:
+    image: mongo
+    container_name: mongo
+    network_mode: host
+    hostname: localhost
+    restart: always
+    volumes:
+      - /$HOME/mongo:/var/lib/mongo
